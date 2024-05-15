@@ -37,7 +37,7 @@ class valor():
                     excep = True
                     i += 1
                     if i > 3: i = 0
-                    cls(val.player["name"])
+                    cls()
                     print(f"[CRITICAL] couldnt read lockfile/localendpoint | {e}")
                     print(f"Waiting for game{'.' * i}")
                     time.sleep(1)

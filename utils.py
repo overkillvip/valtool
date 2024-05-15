@@ -5,9 +5,10 @@ from termcolor import colored
 color = "dark_grey"
 prefix = f"{colored('[', color)}{colored('$', 'magenta')}{colored(']', color)}"
 
-def cls(name):
+# circular imports can suck my dick
+def cls(name=""):
     os.system("cls || clear")
-    print(f"\n{prefix} {colored(name, "light_magenta", attrs=["blink", "bold"])}")
+    if name: print(f"\n{prefix} {colored(name, "light_magenta", attrs=["blink", "bold"])}")
 
 
 def spinner(i):
