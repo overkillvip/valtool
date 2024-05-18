@@ -1,4 +1,4 @@
-import requests, argparse, base64, os, re, time, json
+import requests, argparse
 from termcolor import colored
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)

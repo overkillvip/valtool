@@ -89,10 +89,22 @@ class valor():
         except Exception as e:
             print(f"[CRITICAL] unkown excep | {e}")
             exit()
+        
+    def refreshToken(self):
+        self.entitlements = requests.get(f"{self.localEndpoint}/entitlements/v1/token", headers=self.basicAuth, verify=False).json()
+        self.entitlementToken = self.entitlements["token"]
+        self.bearerToken = self.entitlements["accessToken"]
+        self.bearerAuth = {"Authorization" : f"Bearer {self.bearerToken}"}
+        self.xHeaders = {
+            "X-Riot-ClientPlatform": self.client["platform"],
+            "X-Riot-ClientVersion": self.client["version"],
+            "X-Riot-Entitlements-JWT": self.entitlementToken,
+            "Authorization": f"Bearer {self.bearerToken}"
+        }
     
-    def log(self, msg, inputmode=False, user=True, newline=True):
+    def log(self, msg, inputmode=False, user=True, newline=True, newnewline=True):
         #if user: print(f"\n{prefix} {colored(val.player['name'], "light_magenta", attrs=["blink", "bold"])}")
-        print(f"\n{'\n' if newline else ''}{prefix} " + colored(msg, color) + ("\n" if not inputmode and not newline else ""))
+        print(f"{'\n' if newnewline else ''}{'\n' if newline else ''}{prefix} " + colored(msg, color) + ("\n" if not (inputmode and newline) else ""))
         if inputmode: return input(colored("   > ", color))
 
 val = valor()
