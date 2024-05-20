@@ -6,6 +6,8 @@ requests.get(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}", headers=val.xHea
 can get enemy team characters and if locked in pre | nvm dont think it responds with enemy team in pre
 """
 def instalock():
+    cypherMapBlacklist = ["icebox"]
+    backupAgent = "neon"
     # loop to always ask for agent even after locked from prev game
     while True:
         fastQuit = False
@@ -16,7 +18,7 @@ def instalock():
                 try:
                     ulog = val.log("enter agent name", inputmode=True).lower()
                     agentids = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true").json()["data"]
-                    agentid = [agent["uuid"] for agent in agentids if agent["displayName"].lower() == ulog.lower()][0]
+                    agents = {agent["displayName"].lower() : agent["uuid"] for agent in agentids}
                     break
                 except KeyboardInterrupt:
                         cls(val.player["name"])
@@ -52,6 +54,8 @@ def instalock():
 
                         matchid = bruh.json()["MatchID"]
                         val.log("FOUND MATCH")
+                        agentid = agents[ulog]
+                        if ulog == "cypher" and cypherMapBlacklist in bruh.json()["MapID"]: agentid = agents[backupAgent]
                         # if not thread:
                         #     thread = threading.Thread(target=logLocks, args=(matchid))
                         #     thread.start()
@@ -71,7 +75,7 @@ def instalock():
             requests.post(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}/select/{agentid}", headers=val.xHeaders)
             time.sleep(0.5)
             requests.post(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}/lock/{agentid}", headers=val.xHeaders)
-            val.log(f"LOCKED SUCCESSFULLY | {ulog} ({agentid}) in {time.time() - timer}s")
+            val.log(f"LOCKED SUCCESSFULLY | {ulog} ({agentid}) in {time.time() - timer}s ({time.time() - timer - lockDelay * 1000})")
 
             logLocks(matchid)
             break
@@ -120,7 +124,8 @@ def logLocks(matchid):
             time.sleep(rateLimitDelay)
 
             # all users logged
-            if all(players[player]["logged"] for player in players): return True
+            #
+            #if all(player["logged"] for key, player in players): return True
     except Exception as e:
         #return False
         pass
