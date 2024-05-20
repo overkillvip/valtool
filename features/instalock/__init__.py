@@ -6,8 +6,7 @@ requests.get(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}", headers=val.xHea
 can get enemy team characters and if locked in pre | nvm dont think it responds with enemy team in pre
 """
 def instalock():
-    cypherMapBlacklist = ["icebox"]
-    backupAgent = "neon"
+    blacklist = {"cypher" : {"backup" : "neon", "maps" : ["icebox"]}}
     # loop to always ask for agent even after locked from prev game
     while True:
         fastQuit = False
@@ -55,7 +54,9 @@ def instalock():
                         matchid = bruh.json()["MatchID"]
                         val.log("FOUND MATCH")
                         agentid = agents[ulog]
-                        if ulog == "cypher" and cypherMapBlacklist in bruh.json()["MapID"]: agentid = agents[backupAgent]
+                        # .keys() .split("\\")[-1]
+                        resp = requests.get(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}", headers=val.xHeaders)
+                        if ulog in blacklist and resp.json()["MapID"].split("/")[-1].lower() in blacklist[ulog]["maps"]: agentid = agents[blacklist[ulog]["backup"]]
                         # if not thread:
                         #     thread = threading.Thread(target=logLocks, args=(matchid))
                         #     thread.start()
