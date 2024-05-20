@@ -6,7 +6,10 @@ requests.get(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}", headers=val.xHea
 can get enemy team characters and if locked in pre | nvm dont think it responds with enemy team in pre
 """
 def instalock():
-    blacklist = {"cypher" : {"backup" : "neon", "maps" : ["icebox"]}}
+    blacklist = {
+        "cypher" : {"backup" : "neon", "maps" : ["icebox"]},
+        "neon" : {"backup" : "cypher", "maps" : ["sunset"]}
+        }
     # loop to always ask for agent even after locked from prev game
     while True:
         fastQuit = False
