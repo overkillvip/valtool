@@ -8,7 +8,7 @@ can get enemy team characters and if locked in pre | nvm dont think it responds 
 def instalock():
     blacklist = {
         "cypher" : {"backup" : "neon", "maps" : ["icebox"]},
-        "neon" : {"backup" : "cypher", "maps" : ["sunset"]}
+        "neon" : {"backup" : "cypher", "maps" : ["sunset", "bind", "breeze"]}
         }
     # loop to always ask for agent even after locked from prev game
     while True:
@@ -28,6 +28,7 @@ def instalock():
                 except Exception as e:
                     cls(val.player["name"])
                     val.log(f"(ERROR) {e}")
+                    return False
 
             # presence and matchid loop
             # do presence cuz it replicates game behaviour and we arent spamming a arbitrary endpoint every second
