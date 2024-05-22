@@ -80,7 +80,7 @@ def instalock():
             requests.post(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}/select/{agentid}", headers=val.xHeaders)
             time.sleep(0.5)
             requests.post(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}/lock/{agentid}", headers=val.xHeaders)
-            val.log(f"LOCKED SUCCESSFULLY | {ulog} ({agentid}) in {time.time() - timer}s ({time.time() - timer - lockDelay * 1000})")
+            val.log(f"LOCKED SUCCESSFULLY | {ulog} ({agentid}) in {time.time() - timer}s ({time.time() - timer - lockDelay})")
 
             logLocks(matchid)
             break
@@ -90,7 +90,6 @@ def instalock():
         except: pass
     return False
 
-# broken rn idk y its so hard to debug cuz timeframe and i have to q
 def logLocks(matchid):
     try:
         time.sleep(0.5)
