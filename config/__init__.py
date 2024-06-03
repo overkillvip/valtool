@@ -14,6 +14,7 @@ class Config():
             with open(f"{__file__.replace(__file__.split('\\')[-1], "")}config.json", "r") as self.configFile:
                 self.config:dict = json.load(self.configFile)
                 self.verify()
+                print(f"({stack()[0][3]})[INFO] Loaded config | verify returned {self.verify()} | {self.config}")
         except Exception as e:
             print(f"({stack()[0][3]})[CRITICAL] {e}")
             exit()

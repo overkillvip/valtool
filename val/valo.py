@@ -2,6 +2,7 @@ import requests, base64, os, re, time, json
 from termcolor import colored
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+from inspect import stack
 
 # scuffed ill change tmrw its 1am and i have to drive tmrw
 from utils import cls, spinner, LOGGER
@@ -43,7 +44,7 @@ class valor():
                     i += 1
                     if i > 3: i = 1
                     cls()
-                    print(f"[CRITICAL] couldnt read {'lockfile/localendpoint' if excep != 'log' else 'logfile'} | {e}")
+                    LOGGER.log(stack()[0][3], f"Couldnt read {'lockfile/localendpoint' if excep != 'log' else 'logfile'} | {e}", "error")
                     print(f"Waiting for game{'.' * i}")
                     time.sleep(1)
 
@@ -52,11 +53,16 @@ class valor():
             
             self.basicToken =  base64.b64encode(f'riot:{self.lockFile["password"]}'.encode()).decode("utf-8")
             self.basicAuth = {"Authorization" : f"Basic {self.basicToken}"}
+            # y no bearer
+            # doesnt matter about printing its local
+            LOGGER.log(stack()[0][3], f"Retrieved basic auth header value {self.basicToken}", "debug")
 
             self.client = {
                 "platform" : "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
                 "version" : list(requests.get(f"{self.localEndpoint}/product-session/v1/external-sessions", headers=self.basicAuth, verify=False).json().values())[-1]["version"]
             }
+
+            LOGGER.log(stack()[0][3], f"Retrieved version {self.client['version']}", "debug")
 
             # X-Headers (remote endpoints)
             self.refreshToken()
@@ -72,16 +78,17 @@ class valor():
                 "name" : f'{self.chatResp["game_name"]}#{self.chatResp["game_tag"]}',
                 "puuid" : self.chatResp["puuid"]
             }
+            LOGGER.log(stack()[0][3], f"Loaded player {self.player}", "debug")
             #self.geo = requests.put("https://riot-geo.pas.si.riotgames.com/pas/v1/product/valorant", json={"id_token" : ""}, headers=self.bearerAuth, verify=False).json()
 
             convoResp = requests.get(f"{self.localEndpoint}/chat/v6/conversations", headers=self.basicAuth, verify=False).json()
             self.chats = {i : chat for i, chat in enumerate(convoResp["conversations"])} if len(convoResp) > 0 else {}
 
         except Exception as e:
-            print(f"[CRITICAL] unkown excep | {e}")
-            exit()
+            LOGGER.log(stack()[0][3], f"Unhandled excep | {e}", "critical")
         
     def refreshToken(self):
+        LOGGER.log(stack()[0][3], "Refreshing remote endpoint auth headers", "debug")
         self.entitlements = requests.get(f"{self.localEndpoint}/entitlements/v1/token", headers=self.basicAuth, verify=False).json()
         self.entitlementToken = self.entitlements["token"]
         self.bearerToken = self.entitlements["accessToken"]
@@ -92,6 +99,7 @@ class valor():
             "X-Riot-Entitlements-JWT": self.entitlementToken,
             "Authorization": f"Bearer {self.bearerToken}"
         }
+        LOGGER.log(stack()[0][3], "Succesfully refreshed remote endpoint auth headers", "info")
     
     def checkPresence(self):
         resp = requests.get(f"{val.localEndpoint}/chat/v4/presences", headers=self.basicAuth, verify=False, timeout=3).json()
@@ -99,6 +107,9 @@ class valor():
         # if len(presence) == 0: raise BufferError
         presence = [user for user in resp["presences"] if user["puuid"] == val.player["puuid"]]
         if len(presence) == 0: return False
-        return json.loads(base64.b64decode(presence[0]["private"]))["sessionLoopState"]
+        gameState = json.loads(base64.b64decode(presence[0]["private"]))["sessionLoopState"]
+
+        LOGGER.log(stack()[0][3], f"Presence changed {gameState}", "debug")
+        return gameState
 
 val = valor()

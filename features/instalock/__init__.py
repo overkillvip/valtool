@@ -140,7 +140,7 @@ def logLocks(matchid):
                 for key, player in enumerate(players):
                     player = players[player]
                     if player["locked"] and not player["logged"]:
-                        LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {player['name']} ON {'YOUR' if player['team'] == players[val.player['puuid']]['team'] else 'ENEMY'} TEAM", newlines=0 ,newnewlines=0)
+                        LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {player['name']} ON {'YOUR' if player['team'] == players[val.player['puuid']]['team'] else 'ENEMY'} TEAM", newlines=0)
                         player["logged"] = True
                 time.sleep(rateLimitDelay)
 
