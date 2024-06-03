@@ -1,0 +1,12 @@
+{
+    "valid" : true,
+    "blacklist" : {
+        "*" : {"backup" : "cypher", "maps" : ["sunset", "bind", "breeze"]},
+        "cypher" : {"backup" : "neon", "maps" : ["icebox"]},
+        "neon" : {"backup" : "cypher", "maps" : ["sunset", "bind", "breeze"]}
+    },
+    "debug" : {
+        "level" : 1,
+        "verbose" : false
+    }
+}

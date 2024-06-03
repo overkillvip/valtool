@@ -3,7 +3,8 @@ from termcolor import colored
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
-from utils import cls, spinner
+# scuffed ill change tmrw its 1am and i have to drive tmrw
+from utils import cls, spinner, LOGGER
 
 rsPattern = r"https://glz-(.+?)-1.(.+?).a.pvp.net"
 lockDelay = 4
@@ -16,7 +17,7 @@ class valor():
         try:
             # name:pid:port:password:protocol
             i = 0
-            excep = False
+            excep = "lock"
             while True:
                 try:
                     with open(f"{os.getenv('localappdata')}\\Riot Games\\Riot Client\\Config\\lockfile", "r") as lockFile:
@@ -29,27 +30,25 @@ class valor():
                         "password" : data[3],
                         "protocol" : data[4]
                     }
-
                     self.localEndpoint = f'https://127.0.0.1:{self.lockFile["port"]}'
                     if requests.get(f"{self.localEndpoint}/product-session/v1/external-sessions", verify=False).status_code != 401: raise BufferError
+
+                    with open(f"{os.getenv('localappdata')}\\VALORANT\\Saved\\Logs\\ShooterGame.log", "r") as logFile:
+                        excep = "log"
+                        self.logFileData = logFile.read()
+                        re.search(rsPattern, self.logFileData).group(0)
+                    excep = False
                     break
                 except Exception as e:
-                    excep = True
                     i += 1
-                    if i > 3: i = 0
+                    if i > 3: i = 1
                     cls()
-                    print(f"[CRITICAL] couldnt read lockfile/localendpoint | {e}")
+                    print(f"[CRITICAL] couldnt read {'lockfile/localendpoint' if excep != 'log' else 'logfile'} | {e}")
                     print(f"Waiting for game{'.' * i}")
                     time.sleep(1)
 
+            # game init thai ming moment
             if excep: time.sleep(10)
-
-            try:
-                with open(f"{os.getenv('localappdata')}\\VALORANT\\Saved\\Logs\\ShooterGame.log", "r") as logFile:
-                    self.logFileData = logFile.read()
-            except Exception as e:
-                print(f"[CRITICAL] couldnt read logfile | {e}")
-                exit()
             
             self.basicToken =  base64.b64encode(f'riot:{self.lockFile["password"]}'.encode()).decode("utf-8")
             self.basicAuth = {"Authorization" : f"Basic {self.basicToken}"}
@@ -59,16 +58,8 @@ class valor():
                 "version" : list(requests.get(f"{self.localEndpoint}/product-session/v1/external-sessions", headers=self.basicAuth, verify=False).json().values())[-1]["version"]
             }
 
-            self.entitlements = requests.get(f"{self.localEndpoint}/entitlements/v1/token", headers=self.basicAuth, verify=False).json()
-            self.entitlementToken = self.entitlements["token"]
-            self.bearerToken = self.entitlements["accessToken"]
-            self.bearerAuth = {"Authorization" : f"Bearer {self.bearerToken}"}
-            self.xHeaders = {
-                "X-Riot-ClientPlatform": self.client["platform"],
-                "X-Riot-ClientVersion": self.client["version"],
-                "X-Riot-Entitlements-JWT": self.entitlementToken,
-                "Authorization": f"Bearer {self.bearerToken}"
-            }
+            # X-Headers (remote endpoints)
+            self.refreshToken()
 
             regexThing = re.search(rsPattern, self.logFileData)
             self.region = regexThing.group(1)
@@ -102,9 +93,12 @@ class valor():
             "Authorization": f"Bearer {self.bearerToken}"
         }
     
-    def log(self, msg, inputmode=False, user=True, newline=True, newnewline=True):
-        #if user: print(f"\n{prefix} {colored(val.player['name'], "light_magenta", attrs=["blink", "bold"])}")
-        print(f"{'\n' if newnewline else ''}{'\n' if newline else ''}{prefix} " + colored(msg, color) + ("\n" if not (inputmode and newline) else ""))
-        if inputmode: return input(colored("   > ", color))
+    def checkPresence(self):
+        resp = requests.get(f"{val.localEndpoint}/chat/v4/presences", headers=self.basicAuth, verify=False, timeout=3).json()
+        # presence = [user for user in resp["presences"] if user["puuid"] == val.player["puuid"] and json.loads(base64.b64decode(user["private"]))["sessionLoopState"] == "PREGAME"][0]
+        # if len(presence) == 0: raise BufferError
+        presence = [user for user in resp["presences"] if user["puuid"] == val.player["puuid"]]
+        if len(presence) == 0: return False
+        return json.loads(base64.b64decode(presence[0]["private"]))["sessionLoopState"]
 
 val = valor()

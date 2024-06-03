@@ -3,9 +3,12 @@ from termcolor import colored
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
-from valo import *
+import consts
+from val.valo import *
 from features.instalock import instalock
 from features.chat import *
+
+# might just use richconsole ngl
 
 cls(val.player["name"])
 
@@ -19,10 +22,10 @@ args = {"mode" : "instalock"}
 def menu(user=True):
     while True:
         try:
-            args["mode"] = val.log(f"enter mode ({', '.join(modes)})", inputmode=True, user=user, newline=user).lower()
+            args["mode"] = LOGGER.print(f"enter mode ({', '.join(modes)})", inputmode=True, user=user).lower()
             if args["mode"] not in modes:
                 cls(val.player["name"])
-                val.log(f"enter a valid mode ({', '.join(modes)})")
+                LOGGER.print(f"enter a valid mode ({', '.join(modes)})")
                 continue
         except KeyboardInterrupt:
             #exit()
@@ -42,7 +45,7 @@ while True:
                 instalock()
             case "rc":
                 user = recieveChats()
-                #val.log(requests.get(f"{val.localEndpoint}/chat/v6/conversations/ares-coregame", headers=val.basicAuth, verify=False).json())
+                #LOGGER.print(requests.get(f"{val.localEndpoint}/chat/v6/conversations/ares-coregame", headers=val.basicAuth, verify=False).json())
             case "sc":
                 user = sendChats()
 
