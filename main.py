@@ -19,10 +19,10 @@ cls(val.player["name"])
 modes = ["il", "rc", "sc"]
 args = {"mode" : "instalock"}
 
-def menu(user=True):
+def menu():
     while True:
         try:
-            args["mode"] = LOGGER.print(f"enter mode ({', '.join(modes)})", inputmode=True, user=user).lower()
+            args["mode"] = LOGGER.print(f"enter mode ({', '.join(modes)})", inputmode=True).lower()
             if args["mode"] not in modes:
                 cls(val.player["name"])
                 LOGGER.print(f"enter a valid mode ({', '.join(modes)})")
@@ -34,20 +34,19 @@ def menu(user=True):
         cls(val.player["name"])
         break
 
-user = True
 while True:
     try:
-        bruh = menu(user)
+        bruh = menu()
+        # incase extra cleanup y not yes ik u can make a quit function no idc
         if bruh == 0: break
-        user = True
         match args["mode"]:
             case "il":
                 instalock()
             case "rc":
-                user = recieveChats()
+                recieveChats()
                 #LOGGER.print(requests.get(f"{val.localEndpoint}/chat/v6/conversations/ares-coregame", headers=val.basicAuth, verify=False).json())
             case "sc":
-                user = sendChats()
+                sendChats()
 
     except KeyboardInterrupt: break
     except: pass

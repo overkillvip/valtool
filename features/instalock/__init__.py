@@ -5,6 +5,7 @@ from consts import consts
 """
 requests.get(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}", headers=val.xHeaders)
 can get enemy team characters and if locked in pre | nvm dont think it responds with enemy team in pre
+yes again ik the fastquit and loopagain are aids idc this wasnt meant to be released
 """
 def instalock():
     # blacklist = {
@@ -34,8 +35,11 @@ def instalock():
                     LOGGER.print(f"(ERROR) {e}")
                     return False
 
-            # matchid loop
-            # do presence cuz it replicates game behaviour and we arent spamming a arbitrary endpoint every second
+            """
+            matchid loop
+            do presence cuz it replicates game behaviour and we arent spamming a arbitrary endpoint every second
+            ik the spinner is aids ill just use a ui lib next time
+            """
             i = 0
             while True:
                 timer = time.time()
@@ -50,7 +54,7 @@ def instalock():
                     # no ternary cuz menus
                     if gameState == "PREGAME": pregame = True
                     elif gameState == "INGAME": pregame = False
-                    else: continue
+                    else: raise TimeoutError
 
 
                     cls(val.player["name"])
@@ -94,30 +98,33 @@ def instalock():
             break
         
         # quit to menu
-        except KeyboardInterrupt: break
+        except KeyboardInterrupt: pass
         except: pass
     logLocks(matchid)
-    return False
+    return True
 
 def logLocks(matchid):
+    players = {}
     while True:
         try:
             # could do {'pregame' if gameState == "PREGAME" else 'core-game'} but no
             gameState = val.checkPresence()
             if gameState == "PREGAME": pregame = True
             elif gameState == "INGAME": pregame = False
-            else: continue
+            else:
+                time.sleep(rateLimitDelay)
+                continue
             
             time.sleep(0.5 if pregame else 2)
             agentresp = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true").json()["data"]
             agents = {agent["uuid"] : agent["displayName"] for agent in agentresp}
 
             resp = requests.get(f"{val.glzEndpoint}/{'pregame' if pregame else 'core-game'}/v1/matches/{matchid}", headers=val.xHeaders).json()
-            if not pregame: resp["Teams"] = {"Players" : resp["Players"]}
+            if not pregame: resp["Teams"] = [{"Players" : resp["Players"]}]
             for team in resp["Teams"]:
                 players = {player["Subject"]: {
                 "name" : "",
-                "team" : team["TeamID"],
+                "team" : team["TeamID"] if pregame else player["TeamID"],
                 "agent" : agents[player["CharacterID"]] if player["CharacterSelectionState"] == "locked" else "",
                 "locked" : player["CharacterSelectionState"] == "locked",
                 "logged" : False} for player in team["Players"] if player["Subject"] not in players}
@@ -136,7 +143,7 @@ def logLocks(matchid):
                         players[player["Subject"]]["locked"] = player["CharacterSelectionState"] == "locked"
 
                 # print all players that are locked, not logged already and once logged add to list
-                # this is bugged for no fuckjing reason cant enum normally or through function
+                # this is bugged for no fuckjing reason cant enum normally or through enumerate
                 for key, player in enumerate(players):
                     player = players[player]
                     if player["locked"] and not player["logged"]:
@@ -147,6 +154,8 @@ def logLocks(matchid):
                 # all users logged
                 if all(player["logged"] for player in players.items()): break
             if not pregame: break
+        # error handling soontm
         except Exception as e:
             #return False
             pass
+    return True

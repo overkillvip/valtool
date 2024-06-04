@@ -39,12 +39,12 @@ class Logger():
     def log(self, function:str, msg, type:str, level=1, **kwargs):
         if type.upper() == "DEBUG" and level > self.level: return
 
-        function = f"({function.lower()}) " if function else ""
-        print(f"{function}[{type.upper()}] {msg}", **kwargs)
+        function = f"{function.lower()}" if function else ""
+        print(f"\n[{colored(type.upper(), 'magenta')}] ({colored(function, color)}) {colored(msg, color)}", **kwargs)
         if type.upper() == "CRITICAL": exit()
 
     def print(self, msg, inputmode=False, newlines=2):
-        print(f"{'\n' * newlines}{prefix} {colored(msg, color)}", end=("\n" if not inputmode else ""))
+        print(f"{'\n' * newlines}{prefix} {colored(msg, color)}", end=("\n" if inputmode else ""))
         if inputmode: return input(colored("   > ", color))
 
 LOGGER = Logger()
