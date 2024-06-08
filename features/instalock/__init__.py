@@ -69,11 +69,15 @@ def instalock():
                     if not pregame:
                         fastQuit = True
                         break
+
                     agentid = agents[ulog]
                     # .keys() .split("\\")[-1]
                     resp = requests.get(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}", headers=val.xHeaders)
                     if ulog in blacklist and resp.json()["MapID"].split("/")[-1].lower() in blacklist[ulog]["maps"]: agentid = agents[blacklist[ulog]["backup"]]
                     elif "*" in blacklist and resp.json()["MapID"].split("/")[-1].lower() in blacklist["*"]["maps"]: agentid = agents[blacklist["*"]["backup"]]
+                    elif blacklist["icebox"]:
+                        fastQuit = True
+                        break
                     # if not thread:
                     #     thread = threading.Thread(target=logLocks, args=(matchid))
                     #     thread.start()
@@ -119,14 +123,15 @@ def logLocks(matchid):
             agentresp = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true").json()["data"]
             agents = {agent["uuid"] : agent["displayName"] for agent in agentresp}
 
+            # "locked" : player["CharacterSelectionState"] == "locked" if pregame else True
             resp = requests.get(f"{val.glzEndpoint}/{'pregame' if pregame else 'core-game'}/v1/matches/{matchid}", headers=val.xHeaders).json()
             if not pregame: resp["Teams"] = [{"Players" : resp["Players"]}]
             for team in resp["Teams"]:
                 players = {player["Subject"]: {
                 "name" : "",
                 "team" : team["TeamID"] if pregame else player["TeamID"],
-                "agent" : agents[player["CharacterID"]] if player["CharacterSelectionState"] == "locked" else "",
-                "locked" : player["CharacterSelectionState"] == "locked",
+                "agent" : agents[player["CharacterID"]] if not pregame or player["CharacterSelectionState"] == "locked" else "",
+                "locked" : player["CharacterSelectionState"] == "locked" if pregame else True,
                 "logged" : False} for player in team["Players"] if player["Subject"] not in players}
 
             puuids = list(players.keys())

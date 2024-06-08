@@ -3,7 +3,8 @@
     "blacklist" : {
         "*" : {"backup" : "cypher", "maps" : ["sunset", "bind", "breeze"]},
         "cypher" : {"backup" : "neon", "maps" : ["icebox"]},
-        "neon" : {"backup" : "cypher", "maps" : ["sunset", "bind", "breeze"]}
+        "neon" : {"backup" : "cypher", "maps" : ["sunset", "bind", "breeze"]},
+        "icebox" : true
     },
     "debug" : {
         "level" : 1,
