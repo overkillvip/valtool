@@ -1,10 +1,9 @@
 {
     "valid" : true,
-    "blacklist" : {
-        "*" : {"backup" : "cypher", "maps" : ["sunset", "bind", "breeze"]},
-        "cypher" : {"backup" : "neon", "maps" : ["icebox"]},
-        "neon" : {"backup" : "cypher", "maps" : ["sunset", "bind", "breeze"]},
-        "icebox" : true
+    "rules" : {
+        "raze" : {"maps" : ["icebox"]},
+        "cypher" : {"maps" : ["sunset", "bind", "breeze"]},
+        "neon" : {"maps" : []}
     },
     "debug" : {
         "level" : 1,

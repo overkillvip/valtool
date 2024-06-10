@@ -109,7 +109,16 @@ class valor():
         if len(presence) == 0: return False
         gameState = json.loads(base64.b64decode(presence[0]["private"]))["sessionLoopState"]
 
-        LOGGER.log(stack()[0][3], f"Presence changed {gameState}", "debug")
+        LOGGER.log(stack()[0][3], f"Presence changed {gameState}", type="debug", level=2)
         return gameState
+    
+    def getNames(self, playersList: dict):
+        # get names
+        puuids = list(playersList.keys())
+        nameResp = requests.put(f"{val.pdEndpoint}/name-service/v2/playersList", headers=val.xHeaders, json=puuids)
+        for player in nameResp.json():
+            playersList[player["Subject"]]["name"] = f"{player['GameName']}#{player['TagLine']}"
+
+        return playersList
 
 val = valor()

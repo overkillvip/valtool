@@ -6,6 +6,6 @@ class Consts():
     def __init__(self):
         self.config = config
         self.DEBUG = DEBUG
-        self.blacklist = config["blacklist"]
+        self.rules = config["rules"]
 
 consts = Consts()
