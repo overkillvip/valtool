@@ -74,7 +74,7 @@ def instalock():
                     # .keys() .split("\\")[-1]
 
                     resp = requests.get(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}", headers=val.xHeaders)
-                    for agent, value in rules:
+                    for agent, value in rules.items():
                         if resp.json()["MapID"].split("/")[-1].lower() in value["maps"]: agentid = agents[agent.lower()]
                     
                     """
@@ -160,14 +160,15 @@ def logLocks(matchid):
                 i = 0
                 for key, player in playersList.items():
                     i += 1
-                    if i == 5: print("\n")
+                    #if i == 5: print("\n")
                     if player["locked"] and not player["logged"]:
                         LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {player['name']} ON {'YOUR' if player['team'] == playersList[val.player['puuid']]['team'] else 'ENEMY'} TEAM", newlines=1)
                         player["logged"] = True
                 time.sleep(rateLimitDelay)
 
                 # all users logged
-                if all(player["logged"] for player in playersList.values()): break
+                if all(player["logged"] for player in playersList.values()):
+                    break
             
             # continue looping if its pregame so we can also get enemy team once gamestate changes to ingame (in match)
             if not pregame: break

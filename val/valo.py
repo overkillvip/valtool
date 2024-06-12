@@ -115,7 +115,7 @@ class valor():
     def getNames(self, playersList: dict):
         # get names
         puuids = list(playersList.keys())
-        nameResp = requests.put(f"{val.pdEndpoint}/name-service/v2/playersList", headers=val.xHeaders, json=puuids)
+        nameResp = requests.put(f"{val.pdEndpoint}/name-service/v2/players", headers=val.xHeaders, json=puuids)
         for player in nameResp.json():
             playersList[player["Subject"]]["name"] = f"{player['GameName']}#{player['TagLine']}"
 
