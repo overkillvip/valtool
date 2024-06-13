@@ -16,6 +16,7 @@ def instalock():
     #     }
     rules = consts.rules
     fastQuit = False
+    ruleMode = False
     # loop to always ask for agent even after locked from prev game
     while True:
         loopAgain = False
@@ -25,6 +26,9 @@ def instalock():
             while True:
                 try:
                     ulog = LOGGER.print("enter agent name", inputmode=True).lower()
+                    if "+" in ulog:
+                        ruleMode = True
+                        ulog.replace("+", "")
                     agentids = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true").json()["data"]
                     agents = {agent["displayName"].lower() : agent["uuid"] for agent in agentids}
                     if ulog not in agents:
@@ -78,10 +82,11 @@ def instalock():
                     # .keys() .split("\\")[-1]
 
                     resp = requests.get(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}", headers=val.xHeaders)
-                    try:
-                        for agent, value in rules.items():
-                            if consts.maps[resp.json()["MapID"].split("/")[-1].lower()] in value["maps"]: agentid = agents[agent.lower()]
-                    except: pass
+                    if ruleMode: 
+                        try:
+                            for agent, value in rules.items():
+                                if consts.maps[resp.json()["MapID"].split("/")[-1].lower()] in value["maps"]: agentid = agents[agent.lower()]
+                        except: pass
                     
                     """
                     if ulog in rules and resp.json()["MapID"].split("/")[-1].lower() in rules[ulog]["maps"]: agentid = agents[rules[ulog]]
@@ -170,7 +175,7 @@ def logLocks(matchid):
                     i += 1
                     #if i == 5: print("\n")
                     if player["locked"] and not player["logged"]:
-                        LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {colored(player['name'], 'magenta' if player['streamer'] else 'dark_grey')} ON {colored('YOUR', 'blue') if player['team'] == playersList[val.player['puuid']]['team'] else colored('ENEMY', 'red')} {colored('TEAM', 'dark_grey')}", newlines=1)
+                        LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {colored(player['name'], 'magenta' if player['streamer'] else 'dark_grey')} {colored('ON', 'dark_grey')} {colored('YOUR', 'blue') if player['team'] == playersList[val.player['puuid']]['team'] else colored('ENEMY', 'red')} {colored('TEAM', 'dark_grey')}", newlines=1)
                         player["logged"] = True
                 time.sleep(rateLimitDelay)
 
