@@ -1,4 +1,5 @@
 import requests, base64, time, json, threading
+from termcolor import colored
 from val.valo import cls, val, spinner, rateLimitDelay, lockDelay, LOGGER
 from consts import consts
 
@@ -26,6 +27,9 @@ def instalock():
                     ulog = LOGGER.print("enter agent name", inputmode=True).lower()
                     agentids = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true").json()["data"]
                     agents = {agent["displayName"].lower() : agent["uuid"] for agent in agentids}
+                    if ulog not in agents:
+                        cls(val.player["name"])
+                        continue
                     break
                 except KeyboardInterrupt:
                         cls(val.player["name"])
@@ -74,8 +78,10 @@ def instalock():
                     # .keys() .split("\\")[-1]
 
                     resp = requests.get(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}", headers=val.xHeaders)
-                    for agent, value in rules.items():
-                        if resp.json()["MapID"].split("/")[-1].lower() in value["maps"]: agentid = agents[agent.lower()]
+                    try:
+                        for agent, value in rules.items():
+                            if consts.maps[resp.json()["MapID"].split("/")[-1].lower()] in value["maps"]: agentid = agents[agent.lower()]
+                    except: pass
                     
                     """
                     if ulog in rules and resp.json()["MapID"].split("/")[-1].lower() in rules[ulog]["maps"]: agentid = agents[rules[ulog]]
@@ -120,6 +126,7 @@ def logLocks(matchid):
             gameState = val.checkPresence()
             if gameState == "PREGAME": pregame = True
             elif gameState == "INGAME": pregame = False
+            elif gameState == "MENUS": break
             else:
                 time.sleep(rateLimitDelay)
                 continue
@@ -139,7 +146,8 @@ def logLocks(matchid):
                     playersList[player["Subject"]] = {
                         "name" : "",
                         "team" : team["TeamID"] if pregame else player["TeamID"],
-                        "agent" : agents[player["CharacterID"]] if not pregame or player["CharacterSelectionState"] == "locked" else "",
+                        "agent" : agents[player["CharacterID"].lower()] if not pregame or player["CharacterSelectionState"] == "locked" else "",
+                        "streamer" : player["PlayerIdentity"]["Incognito"],
                         "locked" : player["CharacterSelectionState"] == "locked" if pregame else True,
                         "logged" : False
                     }  
@@ -152,7 +160,7 @@ def logLocks(matchid):
                 if not pregame: resp["Teams"] = [{"Players" : resp["Players"]}]
                 for team in resp["Teams"]:
                     for player in team["Players"]:
-                        playersList[player["Subject"]]["agent"] = agents[player["CharacterID"]] if not pregame or player["CharacterSelectionState"] == "locked" else ""
+                        playersList[player["Subject"]]["agent"] = agents[player["CharacterID"].lower()] if not pregame or player["CharacterSelectionState"] == "locked" else ""
                         playersList[player["Subject"]]["locked"] = player["CharacterSelectionState"] == "locked" if pregame else True
 
                 # print all players that are locked, not logged already and once logged add to list
@@ -162,7 +170,7 @@ def logLocks(matchid):
                     i += 1
                     #if i == 5: print("\n")
                     if player["locked"] and not player["logged"]:
-                        LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {player['name']} ON {'YOUR' if player['team'] == playersList[val.player['puuid']]['team'] else 'ENEMY'} TEAM", newlines=1)
+                        LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {colored(player['name'], 'magenta' if player['streamer'] else 'dark_grey')} ON {colored('YOUR', 'blue') if player['team'] == playersList[val.player['puuid']]['team'] else colored('ENEMY', 'red')} {colored('TEAM', 'dark_grey')}", newlines=1)
                         player["logged"] = True
                 time.sleep(rateLimitDelay)
 

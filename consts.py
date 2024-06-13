@@ -7,5 +7,6 @@ class Consts():
         self.config = config
         self.DEBUG = DEBUG
         self.rules = config["rules"]
+        self.maps = config["maps"]
 
 consts = Consts()
