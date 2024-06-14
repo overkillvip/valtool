@@ -29,10 +29,10 @@ def instalock():
                     ulog = LOGGER.print("enter agent name", inputmode=True).lower()
                     if "+" in ulog:
                         ruleMode = True
-                        ulog.replace("+", "")
+                        ulog = ulog.replace("+", "")
                     if "-" in ulog:
                         skipDelay = True
-                        ulog.replace("-", "")
+                        ulog = ulog.replace("-", "")
 
                     agentids = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true").json()["data"]
                     agents = {agent["displayName"].lower() : agent["uuid"] for agent in agentids}
