@@ -119,7 +119,7 @@ def instalock():
             requests.post(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}/select/{agentid}", headers=val.xHeaders)
             if not skipDelay: time.sleep(0.5)
             requests.post(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}/lock/{agentid}", headers=val.xHeaders)
-            LOGGER.print(f"LOCKED SUCCESSFULLY | {ulog} ({agentid}) in {time.time() - timer}s ({time.time() - timer - (lockDelay - 0.5) if not skipDelay else 0})")
+            LOGGER.print(f"LOCKED SUCCESSFULLY | {ulog} ({agentid}) in {time.time() - timer}s ({time.time() - timer - (lockDelay - 0.5 if not skipDelay else 0)})")
             break
         
         # quit to menu
