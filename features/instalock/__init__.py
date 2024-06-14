@@ -172,7 +172,8 @@ def logLocks(matchid):
                 # this is bugged for no fuckjing reason cant enum normally or through enumerate
                 for key, player in playersList.items():
                     if player["locked"] and not player["logged"]:
-                        if len(set(player for player in playersList if player["logged"])) == 5: print("\n")
+                        # fucking python
+                        if len(set(player for player in playersList if playersList[player]["logged"])) == 5: print("\n")
                         LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {colored(player['name'], 'magenta' if player['streamer'] else 'dark_grey')} {colored('ON', 'dark_grey')} {colored('YOUR', 'blue') if player['team'] == playersList[val.player['puuid']]['team'] else colored('ENEMY', 'red')} {colored('TEAM', 'dark_grey')}", newlines=1)
                         player["logged"] = True
                 time.sleep(rateLimitDelay)
