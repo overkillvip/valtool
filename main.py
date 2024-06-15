@@ -6,7 +6,7 @@ requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 import consts
 from val.valo import *
 from features.instalock import instalock
-from features.chat import *
+from features.chat import Chats
 
 #from rich.console import Console as RichConsole
 
@@ -36,6 +36,7 @@ def menu():
         cls(val.player["name"])
         break
 
+chats = Chats()
 while True:
     try:
         bruh = menu()
@@ -45,12 +46,12 @@ while True:
             case "il":
                 instalock()
             case "rc":
-                recieveChats()
+                chats.recieveChats()
                 #LOGGER.print(requests.get(f"{val.localEndpoint}/chat/v6/conversations/ares-coregame", headers=val.basicAuth, verify=False).json())
             case "sc":
-                sendChats()
+                chats.sendChats()
 
     except KeyboardInterrupt: break
-    except: pass
+    except Exception as e: pass
 
 print("\n\n")

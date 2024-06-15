@@ -81,8 +81,10 @@ class valor():
             LOGGER.log(stack()[0][3], f"Loaded player {self.player}", "debug")
             #self.geo = requests.put("https://riot-geo.pas.si.riotgames.com/pas/v1/product/valorant", json={"id_token" : ""}, headers=self.bearerAuth, verify=False).json()
 
+            """
             convoResp = requests.get(f"{self.localEndpoint}/chat/v6/conversations", headers=self.basicAuth, verify=False).json()
             self.chats = {i : chat for i, chat in enumerate(convoResp["conversations"])} if len(convoResp) > 0 else {}
+            """
             #self.agents = self.getAgents()
 
         except Exception as e:
