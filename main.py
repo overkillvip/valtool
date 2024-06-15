@@ -8,6 +8,8 @@ from val.valo import *
 from features.instalock import instalock
 from features.chat import *
 
+#from rich.console import Console as RichConsole
+
 # might just use richconsole ngl
 
 cls(val.player["name"])

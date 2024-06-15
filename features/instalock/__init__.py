@@ -2,7 +2,7 @@ import requests, base64, time, json, threading
 from termcolor import colored
 from val.valo import cls, val, spinner, rateLimitDelay, lockDelay, LOGGER
 from consts import consts
-from features.loglocks import logLocks
+from features.loglocks import InstaLock
 
 """
 requests.get(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}", headers=val.xHeaders)
@@ -34,8 +34,7 @@ def instalock():
                         skipDelay = True
                         ulog = ulog.replace("-", "")
 
-                    agentids = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true").json()["data"]
-                    agents = {agent["displayName"].lower() : agent["uuid"] for agent in agentids}
+                    agents = val.getAgents()
                     if ulog not in agents:
                         cls(val.player["name"])
                         continue
@@ -118,14 +117,14 @@ def instalock():
             if not skipDelay: time.sleep(lockDelay)
             requests.post(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}/select/{agentid}", headers=val.xHeaders)
             if not skipDelay: time.sleep(0.5)
-            requests.post(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}/lock/{agentid}", headers=val.xHeaders)
+            test = requests.post(f"{val.glzEndpoint}/pregame/v1/matches/{matchid}/lock/{agentid}", headers=val.xHeaders)
             LOGGER.print(f"LOCKED SUCCESSFULLY | {ulog} ({agentid}) in {time.time() - timer}s ({time.time() - timer - (lockDelay - 0.5 if not skipDelay else 0)})")
             break
         
         # quit to menu
         except KeyboardInterrupt: pass
         except: pass
-    logLocks(matchid)
+    locks = InstaLock(matchid)
     return True
 
 

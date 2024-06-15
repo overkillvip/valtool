@@ -83,6 +83,7 @@ class valor():
 
             convoResp = requests.get(f"{self.localEndpoint}/chat/v6/conversations", headers=self.basicAuth, verify=False).json()
             self.chats = {i : chat for i, chat in enumerate(convoResp["conversations"])} if len(convoResp) > 0 else {}
+            #self.agents = self.getAgents()
 
         except Exception as e:
             LOGGER.log(stack()[0][3], f"Unhandled excep | {e}", "critical")
@@ -120,5 +121,11 @@ class valor():
             playersList[player["Subject"]]["name"] = f"{player['GameName']}#{player['TagLine']}"
 
         return playersList
+    
+    def getAgents(self, byName=True):
+        agentids = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true").json()["data"]
+        if byName: agents = {agent["displayName"].lower() : agent["uuid"] for agent in agentids}
+        else: agents = {agent["uuid"] : agent["displayName"].lower() for agent in agentids}
+        return agents
 
 val = valor()
