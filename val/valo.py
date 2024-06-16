@@ -102,7 +102,7 @@ class valor():
             "X-Riot-Entitlements-JWT": self.entitlementToken,
             "Authorization": f"Bearer {self.bearerToken}"
         }
-        LOGGER.log(stack()[0][3], "Succesfully refreshed remote endpoint auth headers", "info")
+        LOGGER.log(stack()[0][3], "Succesfully refreshed remote endpoint auth headers", "debug")
     
     def checkPresence(self):
         resp = requests.get(f"{val.localEndpoint}/chat/v4/presences", headers=self.basicAuth, verify=False, timeout=3).json()

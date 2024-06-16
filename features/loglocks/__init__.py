@@ -43,7 +43,7 @@ class InstaLock():
                             "name" : "",
                             "team" : team["TeamID"] if self.pregame else player["TeamID"],
                             "agent" : agents[player["CharacterID"].lower()] if not self.pregame or player["CharacterSelectionState"] == "locked" else "",
-                            "streamer" : player["PlayerIdentity"]["Incognito"],
+                            "incognito" : player["PlayerIdentity"]["Incognito"],
                             "locked" : player["CharacterSelectionState"] == "locked" if self.pregame else True,
                             "logged" : False
                         }  
@@ -80,7 +80,7 @@ class InstaLock():
                 if player["locked"] and not player["logged"]:
                     # fucking python
                     if len(set(player for player in self.playerList if self.playerList[player]["logged"])) == 5: print("\n")
-                    LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {colored(player['name'], 'magenta' if player['streamer'] else 'dark_grey')} {colored('ON', 'dark_grey')} {colored('YOUR', 'blue') if player['team'] == self.playerList[val.player['puuid']]['team'] else colored('ENEMY', 'red')} {colored('TEAM', 'dark_grey')}", newlines=1)
+                    LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {colored(player['name'], 'magenta' if player['incognito'] else 'dark_grey')} {colored('ON', 'dark_grey')} {colored('YOUR', 'blue') if player['team'] == self.playerList[val.player['puuid']]['team'] else colored('ENEMY', 'red')} {colored('TEAM', 'dark_grey')}", newlines=1)
                     player["logged"] = True
             time.sleep(rateLimitDelay)
 

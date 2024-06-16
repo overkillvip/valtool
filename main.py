@@ -27,7 +27,7 @@ def menu():
             args["mode"] = LOGGER.print(f"enter mode ({', '.join(modes)})", inputmode=True).lower()
             if args["mode"] not in modes:
                 cls(val.player["name"])
-                LOGGER.print(f"enter a valid mode ({', '.join(modes)})")
+                LOGGER.print(f"enter a valid mode.")
                 continue
         except KeyboardInterrupt:
             #exit()

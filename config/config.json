@@ -1,12 +1,5 @@
 {
     "valid" : true,
-    "maps" : {
-        "juliett" : "sunset",
-        "infinity" : "abyss",
-        "port" : "icebox",
-        "duality" : "bind"
-
-    },
     "rules" : {
         "raze" : {"maps" : ["icebox"]},
         "cypher" : {"maps" : ["sunset", "bind", "breeze"]},

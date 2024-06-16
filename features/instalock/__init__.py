@@ -89,7 +89,7 @@ def instalock():
                     if ruleMode: 
                         try:
                             for agent, value in rules.items():
-                                if consts.maps[resp.json()["MapID"].split("/")[-1].lower()] in value["maps"]: agentid = agents[agent.lower()]
+                                if consts.maps[resp.json()["MapID"].lower()] in value["maps"]: agentid = agents[agent.lower()]
                         except: pass
                     
                     """
