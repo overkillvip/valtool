@@ -1,9 +1,10 @@
 {
     "valid" : true,
     "rules" : {
-        "raze" : {"maps" : ["icebox"]},
+        "reyna" : {"maps" : [""]},
+        "raze" : {"maps" : ["split"]},
         "cypher" : {"maps" : ["sunset", "bind", "breeze"]},
-        "neon" : {"maps" : []}
+        "neon" : {"maps" : ["icebox"]}
     },
     "debug" : {
         "level" : 1,

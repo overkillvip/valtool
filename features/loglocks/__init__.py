@@ -6,7 +6,7 @@ from consts import consts
 
 class InstaLock():
     def __init__(self, matchid):
-        self.agents: dict = val.getAgents(False)
+        self.agents: dict = val.getAgents()
         self.pregame: bool = False
         self.matchid: str = matchid
         self.playerList: dict[dict] = {}
@@ -29,11 +29,9 @@ class InstaLock():
                 
                 # get agents
                 time.sleep(0.5 if self.pregame else 2)
-                agents = val.getAgents(False)
+                agents = self.agents
 
-                # "locked" : player["CharacterSelectionState"] == "locked" if pregame else True
                 resp = requests.get(f"{val.glzEndpoint}/{self.stage()}/v1/matches/{self.matchid}", headers=val.xHeaders).json()
-
                 # i swear val purposely change their api convention to fuck shit
                 if not self.pregame: resp["Teams"] = [{"Players" : resp["Players"]}]
                 for team in resp["Teams"]:
@@ -43,6 +41,7 @@ class InstaLock():
                             "name" : "",
                             "team" : team["TeamID"] if self.pregame else player["TeamID"],
                             "agent" : agents[player["CharacterID"].lower()] if not self.pregame or player["CharacterSelectionState"] == "locked" else "",
+                            "level" : player["PlayerIdentity"]["AccountLevel"],
                             "incognito" : player["PlayerIdentity"]["Incognito"],
                             "locked" : player["CharacterSelectionState"] == "locked" if self.pregame else True,
                             "logged" : False
@@ -64,7 +63,7 @@ class InstaLock():
 
 
     def playerLoop(self):
-        agents = val.getAgents(False)
+        agents = self.agents
         # loop to get new player stats
         while True:
             resp = requests.get(f"{val.glzEndpoint}/{self.stage()}/v1/matches/{self.matchid}", headers=val.xHeaders).json()
@@ -80,7 +79,7 @@ class InstaLock():
                 if player["locked"] and not player["logged"]:
                     # fucking python
                     if len(set(player for player in self.playerList if self.playerList[player]["logged"])) == 5: print("\n")
-                    LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {colored(player['name'], 'magenta' if player['incognito'] else 'dark_grey')} {colored('ON', 'dark_grey')} {colored('YOUR', 'blue') if player['team'] == self.playerList[val.player['puuid']]['team'] else colored('ENEMY', 'red')} {colored('TEAM', 'dark_grey')}", newlines=1)
+                    LOGGER.print(f"NEW LOCKED AGENT {player['agent']} BY {colored(player['name'], 'magenta' if player['incognito'] else 'dark_grey')} {colored(player['level'], "light_blue")} {colored('ON', 'dark_grey')} {colored('YOUR', 'blue') if player['team'] == self.playerList[val.player['puuid']]['team'] else colored('ENEMY', 'red')} {colored('TEAM', 'dark_grey')}", newlines=1)
                     player["logged"] = True
             time.sleep(rateLimitDelay)
 

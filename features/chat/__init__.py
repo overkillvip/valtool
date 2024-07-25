@@ -17,7 +17,7 @@ class Chats():
             try:
                 cls(val.player["name"])
                 LOGGER.print(self.chats)
-                ulog = int(LOGGER.print("enter chat num to return history", inputmode=True, newlines=0))
+                ulog = int(LOGGER.print("enter chat num to return history", inputmode=True, newlines=2))
                 if ulog not in range(len(self.chats)): continue
                 break
             except KeyboardInterrupt:
@@ -40,7 +40,7 @@ class Chats():
             try:
                 cls(val.player["name"])
                 LOGGER.print(self.chats)
-                ulog = int(LOGGER.print("enter chat num to send msg", inputmode=True, newlines=0))
+                ulog = int(LOGGER.print("enter chat num to send msg", inputmode=True, newlines=2))
                 if ulog not in range(len(self.chats)): continue
                 break
             except KeyboardInterrupt:

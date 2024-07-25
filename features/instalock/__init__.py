@@ -34,11 +34,13 @@ def instalock():
                         skipDelay = True
                         ulog = ulog.replace("-", "")
 
-                    agents = val.getAgents()
+                    agents = val.getAgents(byId=False)
                     if ulog not in agents:
                         cls(val.player["name"])
                         continue
+
                     break
+
                 except KeyboardInterrupt:
                         cls(val.player["name"])
                         return False

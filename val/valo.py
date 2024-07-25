@@ -124,10 +124,10 @@ class valor():
 
         return playersList
     
-    def getAgents(self, byName=True):
+    def getAgents(self, byId=True):
         agentids = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true").json()["data"]
-        if byName: agents = {agent["displayName"].lower() : agent["uuid"] for agent in agentids}
-        else: agents = {agent["uuid"] : agent["displayName"].lower() for agent in agentids}
+        if byId: agents = {agent["uuid"] : agent["displayName"].lower() for agent in agentids}
+        else: agents = {agent["displayName"].lower() : agent["uuid"] for agent in agentids}
         return agents
 
 val = valor()
